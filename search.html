@@ -27,12 +27,83 @@
             <a href="./individual.html">Individual Page</a>
             <a href="./search.html">Search Page</a>
         </div>
-        <div>
-            <input type="text" placeholder="Enter name">
+        <div id="search">
+            <input type="text" id="searchName" placeholder="Enter Brewery Name">
+        </div>
+        <div id="detailsPage">
+            <table>
+                <thead>
+                    <th>Name</th>
+                    <th>Brewery_type</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Select </th>
+                </thead>
+                <tbody id="tableBody">
+
+                </tbody>
+            </table>            
         </div>
     </div>    
 </body>
 <script>
+
+    
+    document.getElementById("searchName").addEventListener("onchange",typeBrewery);
+
+
+    
+
+    function typeBrewery(){
+        let name=document.getElementById("searchName").value;
+        console.log(name);
+    }
+
+
+
+    async function breweryContent(url){
+        let data=await fetch(url);
+        let details=await data.json();
+        detailsTable(details);
+    }
+
+
+
+    function detailsTable(data){
+        document.getElementById("tableBody").innerHTML="";
+        data.forEach((element) => {
+            let nameElement=document.createElement("td");
+            let typeElement=document.createElement("td");
+            let cityElement=document.createElement("td");
+            let stateElement=document.createElement("td");
+            let selectButton=document.createElement("button");
+            selectButton.textContent="MORE DETAILS";
+
+            selectButton.addEventListener("click",()=>{
+                let breweryIds=JSON.parse(localStorage.getItem("breweryIds")) || [];
+
+                let breweryDetail=[];
+                breweryDetail.push(element.id,element.name);
+
+                breweryIds.push(breweryDetail);
+                localStorage.setItem("breweryIds",JSON.stringify(breweryIds));
+
+            });
+
+            nameElement.textContent=element.name;
+            typeElement.textContent=element.brewery_type;
+            cityElement.textContent=element.city;
+            stateElement.textContent=element.state;
+
+            let tableRowElement=document.createElement("tr");
+
+            tableRowElement.append(nameElement,typeElement,cityElement,stateElement,selectButton);
+
+
+
+            document.getElementById("tableBody").append(tableRowElement);
+        });
+    }
 
 </script>
 </html>
