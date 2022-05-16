@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main page</title>
+</head>
+<style>
+    #navbar{
+        background-color: teal;
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        margin: 10px;
+    }
+    #navbar a{
+        color: white;
+        text-decoration: none;
+        font-size: large;
+    }
+</style>
+<body>
+    <div id="container">
+        <div id="navbar">
+            <a href="./main.html">Home Page</a>
+            <a href="./individual.html">Individual Page</a>
+            <a href="./search.html">Search Page</a>
+        </div>
+        <div id="types">
+            <select name="" id="selectId">
+                <option value="none">Select Type</option>
+                <option value="micro">Micro</option>
+                <option value="nano">Nano</option>
+                <option value="regional">Regional</option>
+                <option value="brewpub">Brewpub</option>
+                <option value="large">Large</option>
+                <option value="planning">Planning</option>
+                <option value="bar">Bar</option>
+                <option value="contract">Contract</option>
+                <option value="proprietor">Proprietor</option>
+                <option value="closed">Closed</option>
+            </select>
+        </div>
+        <div id="detailsPage">
+            <table>
+                <thead>
+                    <th>Name</th>
+                    <th>Brewery_type</th>
+                    <th>City</th>
+                    <th>State</th>
+                    <th>Select </th>
+                </thead>
+                <tbody id="tableBody">
+
+                </tbody>
+            </table>            
+        </div>
+    </div>    
+</body>
+<script>
+    let fullDetailsUrl="https://api.openbrewerydb.org/breweries";
+
+    window.addEventListener("load",pageload);
+    document.getElementById("selectId").addEventListener("change",typeBrewery);
+
+
+    
+
+    function typeBrewery(){
+        let breweryType=document.getElementById("selectId").value;
+        let typeUrl=`https://api.openbrewerydb.org/breweries?by_type=${breweryType}`;
+        breweryContent(typeUrl);
+    }
+
+
+
+    function pageload(){
+        breweryContent(fullDetailsUrl) ;
+    }
+
+
+
+
+
+    async function breweryContent(url){
+        let data=await fetch(url);
+        let details=await data.json();
+        detailsTable(details);
+    }
+
+
+
+    function detailsTable(data){
+        document.getElementById("tableBody").innerHTML="";
+        data.forEach((element) => {
+            let nameElement=document.createElement("td");
+            let typeElement=document.createElement("td");
+            let cityElement=document.createElement("td");
+            let stateElement=document.createElement("td");
+            let selectButton=document.createElement("button");
+            selectButton.textContent="MORE DETAILS";
+
+            selectButton.addEventListener("click",()=>{
+                let breweryIds=JSON.parse(localStorage.getItem("breweryIds")) || [];
+
+                let breweryDetail=[];
+                breweryDetail.push(element.id,element.name);
+
+                breweryIds.push(breweryDetail);
+                localStorage.setItem("breweryIds",JSON.stringify(breweryIds));
+
+            });
+
+            nameElement.textContent=element.name;
+            typeElement.textContent=element.brewery_type;
+            cityElement.textContent=element.city;
+            stateElement.textContent=element.state;
+
+            let tableRowElement=document.createElement("tr");
+
+            tableRowElement.append(nameElement,typeElement,cityElement,stateElement,selectButton);
+
+
+
+            document.getElementById("tableBody").append(tableRowElement);
+        });
+    }
+
+</script>
+</html>

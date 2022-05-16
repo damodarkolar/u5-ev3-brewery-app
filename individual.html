@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main page</title>
+</head>
+<style>
+    #navbar{
+        background-color: teal;
+        display: flex;
+        justify-content: space-between;
+        padding: 20px;
+        margin: 10px;
+    }
+    #navbar a{
+        color: white;
+        text-decoration: none;
+        font-size: large;
+    }
+    #cards{
+        display: grid;
+        grid-template-columns: repeat(4,1fr);
+        gap: 20px;
+    }
+    #cards div{
+        background-color: blue;
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    
+</style>
+<body>
+    <div id="container">
+        <div id="navbar">
+            <a href="./main.html">Home Page</a>
+            <a href="./individual.html">Individual Page</a>
+            <a href="./search.html">Search Page</a>
+        </div>
+        <div id="cards">
+            
+        </div>
+    </div>    
+</body>
+<script>
+window.addEventListener("load",brewerycardCreator);
+
+
+async function brewerycardCreator(){
+    let breweryDetails=JSON.parse(localStorage.getItem("breweryIds")) || [] ;
+
+
+
+    if(breweryDetails.length===0){
+        alert("No Data Found");
+        window.location.href="./main.html"
+    }else {
+        breweryDetails.forEach(async (element) => {
+            let name=element[1];
+            let data=await fetch(`https://api.openbrewerydb.org/breweries?by_name=${name}&per_page=1`)
+            let breweryDetails=await data.json();
+
+            let details=breweryDetails[0];
+
+            let cardDiv=document.createElement("div");
+            cardDiv.setAttribute("class","cardDiv");
+
+
+            let nameElement=document.createElement("h4");
+            nameElement.innerText="Name :"+details.name;
+
+            let idElement=document.createElement("p");
+            idElement.innerText="Id :"+details.id;
+
+            let cityElement=document.createElement("p");
+            cityElement.innerText="City :"+details.city;
+            
+            let stateElement=document.createElement("p");
+            stateElement.innerText="State :"+details.state;
+
+            let countryElement=document.createElement("p");
+            countryElement.innerText="Country :"+details.country;
+
+            let typeElement=document.createElement("p");
+            typeElement.innerText="Type :"+details.brewery_type;
+
+            let phoneElement=document.createElement("p");
+            phoneElement.innerText="Phone :"+details.phone;
+
+            
+
+            cardDiv.append(nameElement,idElement,cityElement,stateElement,countryElement,typeElement,phoneElement);
+
+            document.getElementById("cards").append(cardDiv);
+
+
+        });
+    }
+}
+</script>
+</html>
