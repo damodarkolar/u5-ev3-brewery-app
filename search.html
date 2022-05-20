@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Main page</title>
+    <title>Search page</title>
 </head>
 <style>
     #navbar{
@@ -49,22 +49,39 @@
 <script>
 
     
-    document.getElementById("searchName").addEventListener("onchange",typeBrewery);
+    document.getElementById("searchName").addEventListener("input",debounce);
 
 
-    
+    let timer;
+
+    function debounce(){
+        if(timer){
+            clearTimeout(timer)
+        }
+
+        timer=setTimeout(function (){
+            typeBrewery();
+        },1000)
+    }
 
     function typeBrewery(){
         let name=document.getElementById("searchName").value;
-        console.log(name);
+       let urlofBrewary=`https://api.openbrewerydb.org/breweries?by_name=${name}`;
+       breweryContent(urlofBrewary)
     }
 
 
 
     async function breweryContent(url){
-        let data=await fetch(url);
+        try {
+            let data=await fetch(url);
         let details=await data.json();
+        console.log(details)
         detailsTable(details);
+
+        } catch (error) {
+            console.log(error);            
+        }       
     }
 
 
